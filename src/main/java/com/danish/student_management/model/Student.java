@@ -3,6 +3,7 @@ package com.danish.student_management.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "students")
@@ -35,4 +36,20 @@ public class Student {
         ACTIVE,
         INACTIVE
     }
+
+    // One student has many enrollments
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<Enrollment> enrollments;
+
+    // One student has many grades
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<Grade> grades;
+
+    // One student has many attendance records
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<Attendance> attendances;
+
+    // One student has one user account
+    @OneToOne(mappedBy = "student", cascade = CascadeType.ALL)
+    private User user;
 }
