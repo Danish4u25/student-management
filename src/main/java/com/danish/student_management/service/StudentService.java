@@ -1,5 +1,7 @@
 package com.danish.student_management.service;
 
+import com.danish.student_management.exception.DuplicateResourceException;
+import com.danish.student_management.exception.ResourceNotFoundException;
 import com.danish.student_management.model.Student;
 import com.danish.student_management.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +22,13 @@ public class StudentService {
     // Get single student by ID
     public Student getStudentById(Long id) {
         return studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Student", "id", id));
     }
 
     // Create new student
     public Student createStudent(Student student) {
         if (studentRepository.existsByEmail(student.getEmail())) {
-            throw new RuntimeException("Email already exists: " + student.getEmail());
+            throw new DuplicateResourceException("Student", "email", student.getEmail());
         }
         return studentRepository.save(student);
     }
