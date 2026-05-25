@@ -12,6 +12,7 @@ import com.danish.student_management.security.JwtUtil;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -84,17 +85,29 @@ public class AuthService {
                 )
         );
 
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "User",
-                                "email",
+        User user =
+                userRepository.findByEmail(
                                 request.getEmail()
                         )
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "User",
+                                        "email",
+                                        request.getEmail()
+                                )
+                        );
+
+        UserDetails userDetails =
+                userDetailsService.loadUserByUsername(
+                        request.getEmail()
                 );
 
-        // TEMPORARY DEBUG TOKEN
-        String token = "TEST_TOKEN";
+        String token =
+                jwtUtil.generateToken(
+                        userDetails,
+                        user.getRole().name(),
+                        user.getId()
+                );
 
         return new LoginResponse(
                 token,
